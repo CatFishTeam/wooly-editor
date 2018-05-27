@@ -2,7 +2,7 @@ let Tooltip = require('./tooltip');
 
 class Sprite extends PIXI.Sprite {
 
-  constructor(texture = null, name = '', originX = 0, originY = 0, onStep = false, currentStep = null, hasTooltip = false, tooltip = '', type = 'action', picked = false) {
+  constructor(texture = null, name = '', originX = 0, originY = 0, onStep = false, currentStep = null, hasTooltip = false, tooltip = '', type = 'action', picked = false, editorId = null) {
     super(PIXI.loader.resources[texture].texture);
 
     this._name = name;
@@ -15,6 +15,7 @@ class Sprite extends PIXI.Sprite {
     this._tooltip.alpha = 0;
     this._type = type;
     this._picked = picked;
+    this._editorId = editorId;
   }
 
   changeSprite(texture) {
@@ -90,6 +91,14 @@ class Sprite extends PIXI.Sprite {
 
   set picked(value) {
     this._picked = value;
+  }
+
+  get editorId() {
+    return this._editorId;
+  }
+
+  set editorId(value) {
+    this._editorId = value;
   }
 }
 

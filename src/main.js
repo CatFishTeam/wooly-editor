@@ -56,16 +56,22 @@ let stage = new PIXI.Graphics();
 stage.beginFill(0xffffff);
 stage.drawRect(0, 0, 640, (app.renderer.height - 32));
 
-// Création du container du menu
+// Création du container du menu de jeu
 let menu = new PIXI.Graphics();
 menu.beginFill(0xfad390);
 menu.drawRect(0, 0, 320, (app.renderer.height - 32));
 menu.position.set(640, 0);
 
+// Création du container du menu de l'éditeur
+let editor = new PIXI.Graphics();
+editor.beginFill(0xfad390);
+editor.drawRect(0, 0, 320, (app.renderer.height - 32));
+editor.position.set(640, 0);
+
 // Ajout des sous-containers dans le container global
 container.addChild(stage);
 container.addChild(menu);
-
+container.addChild(editor);
 
 
 /**
@@ -101,6 +107,9 @@ PIXI.loader
   .add("stone1", "./src/assets/images/stone1.png")
   .add("stone2", "./src/assets/images/stone2.png")
   .add("bush", "./src/assets/images/bush.png")
+  // Editor textures
+  .add("editor-grass", "./src/assets/images/editor-grass.png")
+  .add("editor-water", "./src/assets/images/editor-water.png")
   .load((loader, resources) => {
 
     const onHover = require('./functions/onHover');
@@ -129,6 +138,18 @@ PIXI.loader
 
 
     /**
+     * L'éditeur
+     */
+    let tileEditorArea = new PIXI.Container();
+    tileEditorArea.name = 'tile-editor';
+    tileEditorArea.x = 32;
+    tileEditorArea.y = 32;
+    let objectEditorArea = new PIXI.Container();
+    objectEditorArea.name = 'object-editor';
+    editor.addChild(tileEditorArea);
+    editor.addChild(objectEditorArea);
+
+    /**
      * Le menu
      */
 // Barre des actions possibles (dans le menu en bas)
@@ -150,6 +171,7 @@ PIXI.loader
 // Zone des tooltips
     let tooltips = new PIXI.Container();
     menu.addChild(tooltips);
+    editor.addChild(tooltips);
 
 // Barre des steps que le chat fera (dans le menu en haut)
     let stepsArea = new PIXI.Container();
@@ -310,6 +332,26 @@ PIXI.loader
     menuText.y = menu.height;
     menu.addChild(menuText);
 
+    let editorText = new PIXI.Text('editor');
+    editorText.x = 20;
+    editorText.y = editor.height;
+    editor.addChild(editorText);
+
+    menu.visible = false;
+
+    // Toggle menu / editor
+    document.querySelector('.switchMenu').addEventListener('click', function () {
+      menu.visible = !menu.visible;
+      editor.visible = !editor.visible;
+    });
+
+    // Set map id
+    document.querySelector('.uniq').addEventListener('click', function () {
+      map.id = Math.random().toString(36).substr(2, 9);
+      console.log(map.id);
+    });
+
+
     function checkActions() {
 
       // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
@@ -349,7 +391,7 @@ PIXI.loader
           .on('pointermove', onDragMove);
       }
 
-    //   Cases de déclencheurs
+      //   Cases de déclencheurs
       triggersObject.filter(triggerObject => {
         triggerObject.interactive = true;
         triggerObject.buttonMode = true;
@@ -360,11 +402,13 @@ PIXI.loader
 
     module.exports = {
       app,
+      map,
       grid,
       stage,
       actions,
       triggerActions,
       menu,
+      editor,
       stepsArea,
       steps,
       triggers,

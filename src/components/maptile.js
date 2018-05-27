@@ -1,4 +1,5 @@
 class MapTile extends PIXI.Sprite {
+
   constructor(texture = null, id = '', originX = 0, originY = 0, location, infos, type = 'MapTile') {
     super(PIXI.loader.resources[texture].texture);
     this.anchor.set(0.5, 0.5);
@@ -10,6 +11,10 @@ class MapTile extends PIXI.Sprite {
     this.height = 40;
     this.width = 64;
     this._type = type;
+  }
+
+  changeSprite(texture) {
+    this.texture = PIXI.loader.resources[texture].texture;
   }
 
   get id() {
@@ -58,6 +63,7 @@ class MapTile extends PIXI.Sprite {
   set type(value) {
     this._type = value;
   }
+
 }
 
 module.exports = MapTile;
