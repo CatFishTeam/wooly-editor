@@ -1,58 +1,41 @@
+// Cet event click concerne le clic sur les tiles de la map, dans l'éditeur
 
 module.exports = function () {
+
   const onHover = require('../onHover');
   const onOut = require('../onOut');
   const onClick = require('./buttons/onClick');
-
   const Sprite = require('../../components/sprite');
   let main = require('../../main');
+  let grid = main.grid;
+  let map = main.map;
   let tooltips = main.tooltips;
   let editor = main.editor;
+  let tileButtons = main.tileEditorArea;
 
-  let tiles = editor.children[0];
-  tiles.removeChildren();
-  let objects = editor.children[1];
-  objects.removeChildren();
-
-  let grass = new Sprite('editor-grass', 'editor-grass', 0);
-  grass.editorId = this.infos.id;
-  grass.x = 0;
-  grass.originX = 0;
-  grass.hasTooltip = true;
-  grass.tooltip = 'Herbe';
-  tooltips.addChild(grass.tooltip);
-
-  let water = new Sprite('editor-water', 'editor-water', 32);
-  water.editorId = this.infos.id;
-  water.x = 32;
-  water.originX = 32;
-  water.hasTooltip = true;
-  water.tooltip = 'Eau';
-  tooltips.addChild(water.tooltip);
-
-  tiles.addChild(grass);
-  tiles.addChild(water);
-
-  for (let tile of tiles.children) {
-    tile.interactive = true;
-    tile.buttonMode = true;
-    tile.anchor.set(0.5, 0.5);
-    tile
-      .on('pointerover', onHover)
-      .on('pointerout', onOut)
-      .on('click', onClick);
+  let selectedButton = tileButtons.children.filter(button => button.highlight)[0];
+  if (selectedButton) {
+    let textureName = selectedButton.name.replace('editor-', '');
+    map.tiles[this.infos.id].firstLayer.texture = textureName;
+    grid.container.children[this.infos.id].texture = PIXI.loader.resources[textureName].texture;
   }
 
-  for (let object of objects.children) {
-    object.interactive = true;
-    object.buttonMode = true;
-    object.anchor.set(0.5, 0.5);
-    object
-      .on('pointerover', onHover)
-      .on('pointerout', onOut)
-      .on('click', onClick);
+  if (!this.highlight) {
+    this.highlight = true;
+    this.highlightOn();
+  } else {
+    this.highlight = false;
+    this.highlightOff();
+    return;
   }
 
-  console.log(tooltips);
+  grid.container.children.filter(child => {
+    if (child.type === 'MapTile' && child.infos.id !== this.infos.id) {
+      child.highlight = false;
+      child.highlightOff();
+    }
+  });
+
   console.log(this.infos);
+
 };

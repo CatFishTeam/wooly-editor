@@ -64,7 +64,7 @@ menu.position.set(640, 0);
 
 // Création du container du menu de l'éditeur
 let editor = new PIXI.Graphics();
-editor.beginFill(0xfad390);
+editor.beginFill(0xffedce);
 editor.drawRect(0, 0, 320, (app.renderer.height - 32));
 editor.position.set(640, 0);
 
@@ -100,16 +100,26 @@ PIXI.loader
   // JSON map data
   .add("map", "./src/assets/maps/map01.json")
   // Map textures (tiles & objets)
-  .add("grass", "./src/assets/images/grass.png")
-  .add("water", "./src/assets/images/water.png")
+  // // tiles
+  .add("grass", "./src/assets/images/test-grass.png")
+  .add("water", "./src/assets/images/test-water.png")
+  .add("stone", "./src/assets/images/stone.png")
+  .add("sand", "./src/assets/images/sand.png")
+  // // objects
   .add("tree", "./src/assets/images/tree.png")
   .add("wall", "./src/assets/images/wall.png")
   .add("stone1", "./src/assets/images/stone1.png")
   .add("stone2", "./src/assets/images/stone2.png")
   .add("bush", "./src/assets/images/bush.png")
-  // Editor textures
+  // // Editor textures
   .add("editor-grass", "./src/assets/images/editor-grass.png")
+  .add("editor-grass-focus", "./src/assets/images/editor-grass-focus.png")
   .add("editor-water", "./src/assets/images/editor-water.png")
+  .add("editor-water-focus", "./src/assets/images/editor-water-focus.png")
+  .add("editor-stone", "./src/assets/images/editor-stone.png")
+  .add("editor-stone-focus", "./src/assets/images/editor-stone-focus.png")
+  .add("editor-sand", "./src/assets/images/editor-sand.png")
+  .add("editor-sand-focus", "./src/assets/images/editor-sand-focus.png")
   .load((loader, resources) => {
 
     const onHover = require('./functions/onHover');
@@ -131,8 +141,6 @@ PIXI.loader
      * La map
      */
 // Dessine la grille sur la map (voir ./components/grid.js)
-// let grid = new Grid(20, 14, 32, 32, stage);
-// grid.draw();
 
     let grid = new IsoGrid(10, 14, 64, 32, stage);
 
@@ -229,7 +237,7 @@ PIXI.loader
     stage.addChild(cat);
 
     /**
-     * Menu
+     * GAME CODE
      */
 
     // On positionne les steps en haut et centré dans le menu
@@ -400,6 +408,66 @@ PIXI.loader
 
     }
 
+
+    /**
+     *  EDITOR CODE
+     */
+
+    let editorTileButtons = {
+      // nom_texture: texte_tooltip
+      'grass': 'Herbe : \ntest',
+      'water': 'Eau',
+      'stone': 'Pierre',
+      'sand': 'Sable'
+    };
+
+    let index = 0;
+
+    for (let texture in editorTileButtons) {
+      let textureSprite = new Sprite('editor-'+texture, 'editor-'+texture, 0);
+      // textureSprite.editorId = this.infos.id;
+      textureSprite.x = index * 48;
+      textureSprite.originX = index * 48;
+      textureSprite.hasTooltip = true;
+      textureSprite.tooltip = editorTileButtons[texture];
+      tooltips.addChild(textureSprite.tooltip);
+      tileEditorArea.addChild(textureSprite);
+      index++;
+    }
+
+    /* Events pour les boutons de l'éditeur */
+
+    function checkEditorActions() {
+
+      // Pour chacun des boutons d'action, on les rend interactif pour pouvoir les cliquer,
+      // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
+      const onHover = require('./functions/editor/buttons/onHover');
+      const onOut = require('./functions/editor/onOut');
+      const onClick = require('./functions/editor/buttons/onClick');
+
+      for (let tile of tileEditorArea.children) {
+        tile.interactive = true;
+        tile.buttonMode = true;
+        tile.anchor.set(0.5, 0.5);
+        tile
+          .on('pointerover', onHover)
+          .on('pointerout', onOut)
+          .on('click', onClick);
+      }
+
+      for (let object of objectEditorArea.children) {
+        object.interactive = true;
+        object.buttonMode = true;
+        object.anchor.set(0.5, 0.5);
+        object
+          .on('pointerover', onHover)
+          .on('pointerout', onOut)
+          .on('click', onClick);
+      }
+
+    }
+
+
     module.exports = {
       app,
       map,
@@ -415,6 +483,8 @@ PIXI.loader
       stepsObject,
       triggersObject,
       tooltips,
+      tileEditorArea,
+      objectEditorArea,
       cat,
       gameInstance
     };
@@ -443,6 +513,7 @@ PIXI.loader
     // // Pour chacun des boutons d'action et déclencheurs, on les rend interactif pour pouvoir les cliquer,
     // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     checkActions();
+    checkEditorActions();
 
 
     // On lance la fonction loop qui se répètera à chaque frame
