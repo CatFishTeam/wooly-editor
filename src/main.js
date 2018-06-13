@@ -105,12 +105,14 @@ PIXI.loader
   .add("water", "./src/assets/images/test-water.png")
   .add("stone", "./src/assets/images/stone.png")
   .add("sand", "./src/assets/images/sand.png")
+  .add("ice", "./src/assets/images/ice.png")
   // // objects
-  .add("tree", "./src/assets/images/tree.png")
-  .add("wall", "./src/assets/images/wall.png")
+  .add("tree", "./src/assets/images/test-tree.png")
+  .add("wall", "./src/assets/images/test-wall.png")
   .add("stone1", "./src/assets/images/stone1.png")
   .add("stone2", "./src/assets/images/stone2.png")
   .add("bush", "./src/assets/images/bush.png")
+  // Editor textures (tiles & objets)
   // // Editor textures
   .add("editor-grass", "./src/assets/images/editor-grass.png")
   .add("editor-grass-focus", "./src/assets/images/editor-grass-focus.png")
@@ -120,11 +122,21 @@ PIXI.loader
   .add("editor-stone-focus", "./src/assets/images/editor-stone-focus.png")
   .add("editor-sand", "./src/assets/images/editor-sand.png")
   .add("editor-sand-focus", "./src/assets/images/editor-sand-focus.png")
+  .add("editor-ice", "./src/assets/images/editor-ice.png")
+  .add("editor-ice-focus", "./src/assets/images/editor-ice-focus.png")
+  // // Editor objects
+  .add("editor-tree", "./src/assets/images/editor-tree.png")
+  .add("editor-tree-focus", "./src/assets/images/editor-tree-focus.png")
+  .add("editor-stone1", "./src/assets/images/editor-stone1.png")
+  .add("editor-stone1-focus", "./src/assets/images/editor-stone1-focus.png")
+  .add("editor-wall", "./src/assets/images/editor-wall.png")
+  .add("editor-wall-focus", "./src/assets/images/editor-wall-focus.png")
+  .add("editor-eraser", "./src/assets/images/editor-eraser.png")
+  .add("editor-eraser-focus", "./src/assets/images/editor-eraser-focus.png")
   .load((loader, resources) => {
 
     const onHover = require('./functions/onHover');
     const onOut = require('./functions/onOut');
-
 
     // console.log(resources["map"].data.player);
 
@@ -154,6 +166,8 @@ PIXI.loader
     tileEditorArea.y = 32;
     let objectEditorArea = new PIXI.Container();
     objectEditorArea.name = 'object-editor';
+    objectEditorArea.x = 32;
+    objectEditorArea.y = 96;
     editor.addChild(tileEditorArea);
     editor.addChild(objectEditorArea);
 
@@ -415,25 +429,49 @@ PIXI.loader
 
     let editorTileButtons = {
       // nom_texture: texte_tooltip
-      'grass': 'Herbe : \ntest',
-      'water': 'Eau',
-      'stone': 'Pierre',
-      'sand': 'Sable'
+      'grass': 'Herbe :\nAjoute une texture d\'herbe au sol.',
+      'water': 'Eau :\nAjoute une texture d\'eau au sol.\nLa partie est perdue si le chat tombe sur cette case.',
+      'stone': 'Pierre :\nAjoute une texture de pierre au sol.',
+      'sand': 'Sable :\nAjoute une texture de sable au sol.',
+      'ice': 'Glace :\nAjoute une texture de sable au sol.\nLe chat suivra sa trajectoire tant qu\'il ne sera pas bloqué.',
+    };
+
+    let editorObjectButtons = {
+      // nom_texture: texte_tooltip
+      'tree': 'Arbre :\nAjoute un objet arbre.\nAgit comme un mur.',
+      'stone1': 'Rocher :\nAjoute un objet rocher.\nAgit comme un mur.',
+      'wall': 'Mur :\nAjoute un objet mur.\nEst bloquant.',
+      'eraser': 'Gomme :\nEfface un objet sur la carte.',
     };
 
     let index = 0;
 
     for (let texture in editorTileButtons) {
       let textureSprite = new Sprite('editor-'+texture, 'editor-'+texture, 0);
-      // textureSprite.editorId = this.infos.id;
       textureSprite.x = index * 48;
       textureSprite.originX = index * 48;
+      textureSprite.type = 'tile';
       textureSprite.hasTooltip = true;
       textureSprite.tooltip = editorTileButtons[texture];
       tooltips.addChild(textureSprite.tooltip);
       tileEditorArea.addChild(textureSprite);
       index++;
     }
+
+    index = 0;
+
+    for (let texture in editorObjectButtons) {
+      let textureSprite = new Sprite('editor-'+texture, 'editor-'+texture, 0);
+      textureSprite.x = index * 48;
+      textureSprite.originX = index * 48;
+      textureSprite.type = 'object';
+      textureSprite.hasTooltip = true;
+      textureSprite.tooltip = editorObjectButtons[texture];
+      tooltips.addChild(textureSprite.tooltip);
+      objectEditorArea.addChild(textureSprite);
+      index++;
+    }
+
 
     /* Events pour les boutons de l'éditeur */
 
@@ -514,6 +552,19 @@ PIXI.loader
     // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     checkActions();
     checkEditorActions();
+
+
+    // Get JSON from map
+    document.querySelector('.getJson').addEventListener('click', function () {
+      let jsonInput = document.querySelector('.mapjson');
+      jsonInput.style.display = 'block';
+      jsonInput.value = JSON.stringify(map);
+      jsonInput.focus();
+      jsonInput.select();
+      document.execCommand("copy");
+      jsonInput.style.display = 'none';
+      alert("json de la map ajouté à ton clipboard mon srab sûr");
+    });
 
 
     // On lance la fonction loop qui se répètera à chaque frame

@@ -16,6 +16,13 @@ module.exports = function () {
     }
   });
 
+  objectButtons.children.filter(object => {
+    if (object.name !== this.name) {
+      object.highlight = false;
+      object.changeSprite(object.name);
+    }
+  });
+
   this.highlight = !this.highlight;
 
   if (this.highlight) {
