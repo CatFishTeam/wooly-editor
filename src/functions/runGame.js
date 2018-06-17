@@ -1,6 +1,7 @@
 /**
  * Ce module est appelé quand le joueur clique sur le bouton Play dans un niveau
  * */
+
 let main = require('../main');
 let grid = main.grid;
 let stage = main.stage;
@@ -268,8 +269,35 @@ function moveForward() {
     return;
   }
 
+  // NIVEAU VALIDE DANS L'EDITEUR : ON L'INSERT EN BDD
   if (isEndGame(cat.x, cat.y) > 0) {
-    alert("Win");
+
+    let validateLevel = confirm("Bravo, vous avez réussi votre niveau ! Souhaitez-vous valider sa création ?");
+    if (validateLevel) {
+      // slug / id de la map
+      map.id = Math.random().toString(36).substr(2, 9);
+      // nom de la map
+      let mapName = prompt("Donnez un nom à votre niveau :");
+      console.log(mapName);
+      // screenshot de la map
+      let renderTexture = PIXI.RenderTexture.create(app.renderer.width, app.renderer.height);
+      app.renderer.render(stage, renderTexture);
+      let canvas = app.renderer.extract.canvas(renderTexture);
+      // convertit le rendu en une image base64
+      let screenshot = canvas.toDataURL('image/png');
+
+      const user_id = 1;
+      const slug = map.id;
+      const name = mapName;
+      const data = JSON.stringify(map);
+      const best = 'notyet';
+      const played = 0;
+      const won = 0;
+      const created_at = new Date();
+      const updated_at = new Date();
+      post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot });
+    }
+
     stopGame();
     return;
   }
@@ -410,4 +438,17 @@ function stopGame() {
     trigger.tint = 0xffffff;
   });
   console.log('game stopped');
+}
+
+
+// Fonction d'envoi POST du level une fois validé
+function post(path, data) {
+  return window.fetch(path, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
 }
