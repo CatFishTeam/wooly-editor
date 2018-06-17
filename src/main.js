@@ -272,7 +272,7 @@ PIXI.loader
     wool.x = tiles[resources["map"].data.player.goalTileId].infos.x;
     wool.y = tiles[resources["map"].data.player.goalTileId].infos.y;
 
-    // On ajoute notre chat à notre niveau
+    // On ajoute notre chat et la pelote à notre niveau
     stage.addChild(cat);
     stage.addChild(wool);
 
@@ -281,7 +281,8 @@ PIXI.loader
      */
 
     // On positionne les steps en haut et centré dans le menu
-    stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
+    // stepsArea.x = (stepsArea.parent.width / 2) - (stepsArea.width / 2);
+    stepsArea.x = 16;
     stepsArea.y = 36;
 
 
@@ -359,8 +360,8 @@ PIXI.loader
 
     // Ajout du bouton "Revenir à l'éditeur"
     let backEditorSprite = new Sprite('editor-back', 'editor-back', 0);
-    backEditorSprite.x = 84;
-    backEditorSprite.originX = 84;
+    backEditorSprite.x = 32;
+    backEditorSprite.originX = 32;
     backEditorSprite.y = menu.height - 96;
     backEditorSprite.originY = menu.height - 96;
     backEditorSprite.type = 'ui';
@@ -368,10 +369,12 @@ PIXI.loader
 
     // On positionne notre barre d'actions en bas et centré dans le menu,
     // et la barre des déclencheurs
-    actions.x = (actions.parent.width / 2) - (actions.width / 2);
+    // actions.x = (actions.parent.width / 2) - (actions.width / 2);
+    actions.x = 32;
     actions.y = actions.parent.height - 198;
 
-    triggerActions.x = (triggerActions.parent.width / 2) - (triggerActions.width / 2);
+    // triggerActions.x = (triggerActions.parent.width / 2) - (triggerActions.width / 2);
+    triggerActions.x = 32;
     triggerActions.y = triggerActions.parent.height - 160;
 
     // On positionne la zone où les tooltips s'afficheront
@@ -588,13 +591,11 @@ PIXI.loader
       if (gameRunning && stepsObject.filter(step => step.type !== 'empty').length > 0) {
         runGame('run');
         play.changeSprite('pause');
-        logs.push('Ca marche !');
       }
       // Sinon, on ne lance pas le jeu, ou on le stoppe s'il était lancé
       else {
         runGame('stop');
         play.changeSprite('play');
-        logs.push('Ca s\'arrête !');
       }
       writeLogs();
     };
@@ -603,7 +604,6 @@ PIXI.loader
     // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     checkActions();
     checkEditorActions();
-
 
     // Toggle menu / editor
     document.querySelector('.switchMenu').addEventListener('click', function () {
