@@ -293,8 +293,8 @@ function moveForward() {
       const best = 'notyet';
       const played = 0;
       const won = 0;
-      const created_at = new Date();
-      const updated_at = new Date();
+      const created_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      const updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
       post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot });
     }
 

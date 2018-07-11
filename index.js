@@ -1,6 +1,5 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-require('dotenv').config();
 const store = require('./store');
 const app = express();
 app.use(express.static(__dirname));
