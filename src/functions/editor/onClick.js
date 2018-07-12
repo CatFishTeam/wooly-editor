@@ -134,8 +134,7 @@ module.exports = function () {
     }
     // For a ui button
     else if (selectedButton.type === 'ui') {
-      console.log(selectedButton, textureName);
-      console.log(cat);
+      console.log("test");
       // Case de départ
       if (textureName === 'start' && this.infos.id !== map.player.goalTileId) {
         map.player.originTileId = this.infos.id;

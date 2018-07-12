@@ -15,6 +15,11 @@ let cat = main.cat;
 let gameInstance = main.gameInstance;
 let animInstance = undefined;
 
+Date.prototype.addHours = function(h) {
+  this.setTime(this.getTime() + (h*60*60*1000));
+  return this;
+};
+
 // Données JSON de la map
 let map = main.map;
 
@@ -293,8 +298,8 @@ function moveForward() {
       const best = 'notyet';
       const played = 0;
       const won = 0;
-      const created_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
-      const updated_at = new Date().toISOString().slice(0, 19).replace('T', ' ');
+      let created_at = new Date().addHours(2);
+      let updated_at = new Date().addHours(2);
       post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot });
     }
 
@@ -397,7 +402,7 @@ function turnLeft() {
       break;
     case 'east':
       catDirection = 'south';
-      break;
+        break;
     default: break;
   }
 }
@@ -437,7 +442,6 @@ function stopGame() {
   triggers.children.filter(trigger => {
     trigger.tint = 0xffffff;
   });
-  console.log('game stopped');
 }
 
 
