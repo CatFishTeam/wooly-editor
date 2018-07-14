@@ -134,6 +134,8 @@ PIXI.loader
   .add("editor-stone1-focus", "./src/assets/images/editor-stone1-focus.png")
   .add("editor-wall", "./src/assets/images/editor-wall.png")
   .add("editor-wall-focus", "./src/assets/images/editor-wall-focus.png")
+  .add("editor-bush", "./src/assets/images/editor-bush.png")
+  .add("editor-bush-focus", "./src/assets/images/editor-bush-focus.png")
   .add("editor-eraser", "./src/assets/images/editor-eraser.png")
   .add("editor-eraser-focus", "./src/assets/images/editor-eraser-focus.png")
   // // Editor UI buttons
@@ -452,6 +454,7 @@ PIXI.loader
       // nom_texture: texte_tooltip
       'tree': 'Arbre :\nAjoute un objet arbre.\nAgit comme un mur.',
       'stone1': 'Rocher :\nAjoute un objet rocher.\nAgit comme un mur.',
+      'bush': 'Buisson :\nAjoute un objet buisson.\nEst bloquant.',
       'wall': 'Mur :\nAjoute un objet mur.\nEst bloquant.',
       'eraser': 'Gomme :\nEfface un objet sur la carte.',
     };
@@ -597,59 +600,12 @@ PIXI.loader
         runGame('stop');
         play.changeSprite('play');
       }
-      writeLogs();
     };
 
     // // Pour chacun des boutons d'action et déclencheurs, on les rend interactif pour pouvoir les cliquer,
     // // drag'n'drop, etc, et on associe ces events aux fonctions dans ./functions
     checkActions();
     checkEditorActions();
-
-    // Toggle menu / editor
-    document.querySelector('.switchMenu').addEventListener('click', function () {
-      menu.visible = !menu.visible;
-      editor.visible = !editor.visible;
-    });
-
-    // Set map id
-    document.querySelector('.uniq').addEventListener('click', function () {
-      map.id = Math.random().toString(36).substr(2, 9);
-      console.log(map.id);
-      let renderTexture = PIXI.RenderTexture.create(app.renderer.width, app.renderer.height);
-      app.renderer.render(stage, renderTexture);
-      let canvas = app.renderer.extract.canvas(renderTexture);
-      let img = canvas.toDataURL('image/png');
-      // document.querySelector('img.screenshot').src = img;
-
-      // convert base64 to blob
-      fetch(img)
-        .then(res => res.blob())
-        .then(blob => {
-
-          // convert blob to base64
-          let reader = new FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = function() {
-            let base64data = reader.result;
-            document.querySelector('img.screenshot').src = base64data;
-          };
-
-        });
-
-    });
-
-
-    // Get JSON from map
-    document.querySelector('.getJson').addEventListener('click', function () {
-      let jsonInput = document.querySelector('.mapjson');
-      jsonInput.style.display = 'block';
-      jsonInput.value = JSON.stringify(map);
-      jsonInput.focus();
-      jsonInput.select();
-      document.execCommand("copy");
-      jsonInput.style.display = 'none';
-      alert("json de la map ajouté à ton clipboard mon srab sûr");
-    });
 
 
     // On lance la fonction loop qui se répètera à chaque frame
@@ -670,16 +626,3 @@ PIXI.loader
 /**
  * Code JS, en dehors de PIXI / du <canvas>
  */
-
-// Affichage des logs (sous le canvas) :
-let logsDiv = document.querySelector('#logs');
-function writeLogs() {
-  logsDiv.innerHTML = '';
-  for (let log of logs) {
-    let logHtml = document.createElement('div');
-    logHtml.setAttribute('class', 'log');
-    logHtml.innerHTML = `<div>${log}</div>`;
-    logsDiv.appendChild(logHtml);
-  }
-}
-

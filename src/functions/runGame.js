@@ -51,8 +51,6 @@ module.exports = function runGame(action = 'run') {
     preventCntProgress = false;
     catDirection = map.player.originDirection;
 
-    console.log("Game running");
-
     if (!gameInstance) {
       requestAnimationFrame(readSteps);
     }
@@ -268,7 +266,16 @@ function moveForward() {
   cat.play();
 
   if (isDeadly(cat.x, cat.y) > 0) {
-    alert("lose");
+    let alerts = document.querySelector('.alerts');
+    alerts.innerHTML = "<i class='fas fa-times'></i>Perdu !<br>" +
+      "Vous êtes tombé dans l'eau, mais vous pouvez réessayer.";
+    alerts.style.visibility = 'visible';
+
+    let closeAlert = document.querySelector('.alerts i');
+    closeAlert.addEventListener('click', function (e) {
+      alerts.style.visibility = 'hidden';
+    });
+
     stopGame();
 
     return;
@@ -279,28 +286,12 @@ function moveForward() {
 
     let validateLevel = confirm("Bravo, vous avez réussi votre niveau ! Souhaitez-vous valider sa création ?");
     if (validateLevel) {
-      // slug / id de la map
-      map.id = Math.random().toString(36).substr(2, 9);
-      // nom de la map
-      let mapName = prompt("Donnez un nom à votre niveau :");
-      console.log(mapName);
-      // screenshot de la map
-      let renderTexture = PIXI.RenderTexture.create(app.renderer.width, app.renderer.height);
-      app.renderer.render(stage, renderTexture);
-      let canvas = app.renderer.extract.canvas(renderTexture);
-      // convertit le rendu en une image base64
-      let screenshot = canvas.toDataURL('image/png');
+      // Avant de prendre le screenshot de la map, on repositionne le chat au départ
+      cat.x = tiles[map.player.originTileId].infos.x;
+      cat.y = tiles[map.player.originTileId].infos.y;
+      catDirection = map.player.originDirection;
 
-      const user_id = -1;
-      const slug = map.id;
-      const name = mapName;
-      const data = JSON.stringify(map);
-      const best = null;
-      const played = 0;
-      const won = 0;
-      let created_at = new Date().addHours(2);
-      let updated_at = new Date().addHours(2);
-      post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot });
+      saveLevel();
     }
 
     stopGame();
@@ -335,20 +326,40 @@ function moveForward() {
       break;
     default: break;
   }
+}
 
-  // if (isDeadly(cat.x, cat.y) > 0) {
-  //   stopGame();
-  // }
+function saveLevel() {
+  // slug / id de la map
+  map.id = Math.random().toString(36).substr(2, 9);
+  // nom de la map
+  let mapName = '';
+  while (mapName.length < 1) {
+    mapName = prompt("Donnez un nom à votre niveau :");
+  }
 
+  // screenshot de la map
+  let renderTexture = PIXI.RenderTexture.create(app.renderer.width, app.renderer.height);
+  app.renderer.render(stage, renderTexture);
+  let canvas = app.renderer.extract.canvas(renderTexture);
+  // convertit le rendu en une image base64
+  let screenshot = canvas.toDataURL('image/png');
+
+  const user_id = null;
+  const slug = map.id;
+  const name = mapName;
+  const data = JSON.stringify(map);
+  const best = null;
+  const played = 0;
+  const won = 0;
+  let created_at = new Date().addHours(2);
+  let updated_at = new Date().addHours(2);
+  post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot }).then(data => console.log(data));
+
+
+  // window.location.href = "//wooly.cat";
 }
 
 function moveTo(originCatX, originCatY, x, y) {
-  // let catCurrentTile = whatTile(x, y);
-  // console.log(catCurrentTile.id);
-  // console.log(grid.container.children);
-  // let catIdInGrid = grid.container.children.map(child => child.name).indexOf('cat');
-  // console.log(catIdInGrid);
-  // reorderInGrid(grid.container.children, catIdInGrid, (catCurrentTile.id + 1));
 
   let diffX = Math.abs(originCatX - x);
   let diffY = Math.abs(originCatY - y);

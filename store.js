@@ -12,7 +12,7 @@ module.exports = {
 
     let base64Data = screenshot.replace(/^data:image\/png;base64,/, "");
 
-    fs.writeFile("src/assets/screenshots/" + slug + ".png", base64Data, 'base64', function(err) {
+    fs.writeFile(__dirname + "/src/assets/screenshots/" + slug + ".png", base64Data, 'base64', function(err) {
       console.log(err);
     });
 
@@ -25,8 +25,7 @@ module.exports = {
       played,
       won,
       created_at,
-      updated_at,
-      screenshot
+      updated_at
     })
   }
 };
