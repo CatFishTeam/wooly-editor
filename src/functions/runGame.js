@@ -291,11 +291,11 @@ function moveForward() {
       // convertit le rendu en une image base64
       let screenshot = canvas.toDataURL('image/png');
 
-      const user_id = 1;
+      const user_id = -1;
       const slug = map.id;
       const name = mapName;
       const data = JSON.stringify(map);
-      const best = 'notyet';
+      const best = null;
       const played = 0;
       const won = 0;
       let created_at = new Date().addHours(2);
