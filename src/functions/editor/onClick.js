@@ -54,6 +54,10 @@ module.exports = function () {
       'accessible': false,
       'deadly': false
     },
+    'bush': {
+      'accessible': false,
+      'deadly': false
+    },
   };
 
   let selectedButton = tileButtons.children.filter(button => button.highlight)[0] ||

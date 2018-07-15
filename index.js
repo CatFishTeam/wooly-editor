@@ -20,6 +20,6 @@ app.post('/createLevel', (req, res) => {
     })
     .then(() => res.sendStatus(200))
 });
-app.listen(7888, () => {
-  console.log('Server running on http://localhost:7888')
+app.listen(7444, () => {
+  console.log('Server running on http://localhost:7444')
 });

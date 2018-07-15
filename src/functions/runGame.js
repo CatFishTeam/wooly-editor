@@ -353,10 +353,12 @@ function saveLevel() {
   const won = 0;
   let created_at = new Date().addHours(2);
   let updated_at = new Date().addHours(2);
-  post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot }).then(data => console.log(data));
+  post('/createLevel', { user_id, slug, name, data, best, played, won, created_at, updated_at, screenshot }).then(data => {
+    if (data.status === 200) {
+      window.location.href = "//wooly.cat";
+    }
+  });
 
-
-  // window.location.href = "//wooly.cat";
 }
 
 function moveTo(originCatX, originCatY, x, y) {
